@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1 Month Anniversary & Special Message 💖</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Mitr & Itim & Prompt) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Itim&family=Mitr:wght@300;400;500;600&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library for Heart Fireworks -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastelPink: {
+                            50: '#fff5f7',
+                            100: '#ffe3ec',
+                            200: '#ffcce0',
+                            300: '#ff9ebb',
+                            400: '#ff6192',
+                            500: '#f93a74',
+                        },
+                        cream: '#fffdf9',
+                    },
+                    fontFamily: {
+                        itim: ['Itim', 'cursive'],
+                        mitr: ['Mitr', 'sans-serif'],
+                        prompt: ['Prompt', 'sans-serif'],
+                    },
+                    animation: {
+                        'float-slow': 'float 4s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 2s infinite',
+                        'bounce-soft': 'bounceSoft 2s infinite',
+                        'sparkle': 'sparkle 1.5s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-12px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+                            '50%': { opacity: '0.85', transform: 'scale(1.03)', filter: 'drop-shadow(0 0 15px rgba(255, 105, 180, 0.6))' },
+                        },
+                        bounceSoft: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-6px)' },
+                        },
+                        sparkle: {
+                            '0%': { opacity: '0.3', transform: 'scale(0.8)' },
+                            '100%': { opacity: '1', transform: 'scale(1.2)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Itim', 'Mitr', cursive, sans-serif;
+            background: linear-gradient(135deg, #ffeef4 0%, #ffd6e5 50%, #fff0f5 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        .floating-heart-bg {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.6;
+            animation: floatUp 8s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) rotate(0deg) scale(0.6);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.7;
+            }
+            80% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-10vh) rotate(360deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.95);
+            box-shadow: 0 20px 40px rgba(249, 58, 116, 0.12), 0 8px 16px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-cute {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-cute:hover {
+            transform: translateY(-4px) scale(1.04);
+            box-shadow: 0 12px 25px rgba(255, 97, 146, 0.4);
+        }
+
+        .btn-cute:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .step-transition {
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .step-hidden {
+            opacity: 0;
+            transform: translateY(20px) scale(0.96);
+            pointer-events: none;
+            position: absolute;
+            width: 100%;
+        }
+
+        .step-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+            position: relative;
+            width: 100%;
+        }
+
+        .avatar-glow {
+            box-shadow: 0 0 25px rgba(255, 97, 146, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4 min-h-screen relative overflow-hidden">
+
+    <!-- แท็ก Audio สำหรับเล่นเพลง 我多喜歡你，你會知道 -->
+    <!-- หมายเหตุ: เปลี่ยน 'music.mp3' เป็น URL หรือชื่อไฟล์เพลงของคุณ -->
+    <audio id="bgMusic" loop src="music.mp3"></audio>
+
+    <div id="bgHeartsContainer" class="fixed inset-0 pointer-events-none z-0 overflow-hidden"></div>
+
+    <div class="fixed top-5 right-5 z-50">
+        <button id="musicToggle" onclick="toggleMusic()" class="bg-white/80 hover:bg-white text-pastelPink-500 p-3.5 rounded-full shadow-lg border border-pink-200 transition-all flex items-center justify-center gap-2 group backdrop-blur-md">
+            <i id="musicIcon" class="fas fa-music text-lg animate-spin" style="animation-duration: 4s;"></i>
+            <span id="musicText" class="text-xs font-semibold pr-1 hidden sm:inline text-pink-600">เปิดเพลง 🎵</span>
+        </button>
+    </div>
+
+    <main class="w-full max-w-lg z-10 my-auto">
+        <div class="glass-card rounded-3xl p-6 md:p-10 text-center relative overflow-hidden border-2 border-pink-100">
+            
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-100/80 border border-pink-200 text-pink-600 text-sm font-medium mb-6 shadow-sm animate-bounce-soft">
+                <i class="fas fa-heart text-pink-500"></i>
+                <span id="progressStepText">ความรู้สึกพิเศษ 💖</span>
+                <i class="fas fa-heart text-pink-500"></i>
+            </div>
+
+            <!-- STEP 1: 1 Month Anniversary with Uploaded Profile Picture -->
+            <div id="step1" class="step-visible step-transition flex flex-col items-center">
+                <div class="relative mb-6">
+                    <div class="w-36 h-36 md:w-40 md:h-40 rounded-full p-1.5 bg-gradient-to-tr from-pink-400 via-rose-300 to-pink-200 shadow-xl animate-float-slow avatar-glow overflow-hidden">
+                        <div class="w-full h-full rounded-full overflow-hidden bg-center bg-cover border-2 border-white shadow-inner">
+                            <img 
+                                src="https://cdn.discordapp.com/attachments/936230789690056755/1557443808579289228/IMG_7086.jpg?backend=b2&ex=6ac7d213&is=6ac68093&hm=eb576b7687eafa087fb2c842d9617a59405097e83cb5f606b714c7e61b39a57e&" 
+                                id="userProfileImg"
+                                alt="รูปภาพของเรา" 
+                                class="w-full h-full object-cover rounded-full"
+                                onerror="this.onerror=null; this.src='https://placehold.co/400x400/ffcce0/f93a74?text=💖';"
+                            />
+                        </div>
+                    </div>
+                    <span class="absolute -top-2 -right-2 text-3xl animate-bounce">✨</span>
+                    <span class="absolute -bottom-1 -left-2 text-3xl animate-pulse">🦊</span>
+                </div>
+
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3 leading-relaxed font-prompt">
+                    1 เดือนแล้วนะ... 🥰
+                </h1>
+                
+                <p class="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed font-itim">
+                    เป็น 1 เดือนที่แฮปปี้มากมีอะไรอยากจะบอก... 💕
+                </p>
+
+                <button onclick="goToStep(2)" class="btn-cute w-full py-4 px-8 bg-gradient-to-r from-pastelPink-400 to-pink-400 hover:from-pastelPink-500 hover:to-pink-500 text-white font-semibold text-lg rounded-2xl shadow-lg shadow-pink-300/50 flex items-center justify-center gap-3 group">
+                    <span>กดตรงนี้สิ</span>
+                    <i class="fas fa-heart text-xl group-hover:scale-125 transition-transform duration-300"></i>
+                </button>
+            </div>
+
+            <div id="step2" class="step-hidden step-transition flex flex-col items-center">
+                <div class="relative mb-6">
+                    <div class="w-28 h-28 bg-gradient-to-tr from-rose-200 to-pink-100 rounded-full flex items-center justify-center shadow-inner animate-float-slow">
+                        <i class="fas fa-hand-holding-heart text-5xl text-pastelPink-400"></i>
+                    </div>
+                    <span class="absolute top-0 left-0 text-2xl">💫</span>
+                    <span class="absolute bottom-0 right-0 text-2xl">🧸</span>
+                </div>
+
+                <p class="text-xl md:text-2xl text-gray-700 mb-8 leading-relaxed font-itim px-2">
+                    จะคอยอยู่เคียงข้างไม่ไปไหน<br>
+                    จะคอยซัพพอร์ตยูไม่ว่ายูจะทำอะไร<br>
+                    ข้างหลังยูจะมีไออยู่เสมอ<br>
+                    และขอบคุณที่วันนั้นเปิดใจให้ไอนะ 🥺✨
+                </p>
+
+                <button onclick="goToStep(3)" class="btn-cute w-full py-4 px-8 bg-gradient-to-r from-pink-400 to-rose-400 hover:from-pink-500 hover:to-rose-500 text-white font-semibold text-lg rounded-2xl shadow-lg shadow-pink-300/50 flex items-center justify-center gap-3 group">
+                    <span>ถึงคนที่น่ารัก 💌</span>
+                    <i class="fas fa-envelope-open-heart text-xl group-hover:rotate-12 transition-transform"></i>
+                </button>
+            </div>
+
+            <div id="step3" class="step-hidden step-transition flex flex-col items-center">
+                <div class="relative mb-6">
+                    <div class="w-28 h-28 bg-gradient-to-tr from-pink-100 to-red-100 rounded-full flex items-center justify-center shadow-inner animate-pulse-glow">
+                        <i class="fas fa-question-circle text-5xl text-pastelPink-400"></i>
+                    </div>
+                    <span class="absolute -top-3 right-2 text-3xl animate-bounce">🙈</span>
+                </div>
+
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3 font-prompt">
+                    พร้อมไหมงับคนเก่ง? 🥺💗
+                </h2>
+                <p class="text-gray-500 mb-8 text-base font-itim">
+                    (หายใจเข้าลึกๆ แล้วกดปุ่มข้างล่างเลยนะ!)
+                </p>
+
+                <button onclick="goToStep(4)" class="btn-cute w-full py-4 px-8 bg-gradient-to-r from-pastelPink-400 to-rose-400 hover:from-pastelPink-500 hover:to-rose-500 text-white font-semibold text-lg rounded-2xl shadow-lg shadow-pink-300/50 flex items-center justify-center gap-3">
+                    <span>พร้อมแล้ว ✨</span>
+                    <i class="fas fa-sparkles text-xl"></i>
+                </button>
+            </div>
+
+            <div id="step4" class="step-hidden step-transition flex flex-col items-center">
+                <div class="relative mb-6">
+                    <div class="w-28 h-28 bg-gradient-to-tr from-pink-200 via-rose-100 to-pink-300 rounded-full flex items-center justify-center shadow-inner animate-float-slow">
+                        <i class="fas fa-rings-wedding text-5xl text-pink-500"></i>
+                    </div>
+                    <span class="absolute -top-1 -right-2 text-3xl">💖</span>
+                    <span class="absolute -bottom-2 -left-2 text-3xl">💐</span>
+                </div>
+
+                <h2 class="text-3xl md:text-4xl font-extrabold text-pink-600 mb-6 font-prompt drop-shadow-sm">
+                    เป็นแฟนกันนะ? 💖
+                </h2>
+
+                <p class="text-gray-600 mb-8 font-itim text-lg">
+                    ตั้งใจเลือกคำตอบนะงับ 😊
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4 w-full">
+                    <button onclick="acceptProposal()" class="btn-cute flex-1 py-4 px-6 bg-gradient-to-r from-pink-400 to-pastelPink-400 text-white font-bold text-lg rounded-2xl shadow-lg shadow-pink-300/50 flex items-center justify-center gap-2">
+                        <span>เป็น 🥰</span>
+                    </button>
+                    <button onclick="acceptProposal()" class="btn-cute flex-1 py-4 px-6 bg-gradient-to-r from-rose-400 to-pink-500 text-white font-bold text-lg rounded-2xl shadow-lg shadow-rose-300/50 flex items-center justify-center gap-2">
+                        <span>เป็น 💖</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="step5" class="step-hidden step-transition flex flex-col items-center">
+                
+                <div class="inline-block bg-pink-100 text-pink-600 px-4 py-1 rounded-full text-sm font-semibold mb-3">
+                    OFFICIAL COUPLE 💕
+                </div>
+
+                <h1 class="text-3xl md:text-4xl font-extrabold text-pink-600 mb-4 font-prompt animate-bounce-soft">
+                    เย้ เป็นแฟนกันแล้วนะ 🎉💖
+                </h1>
+
+                <!-- รูปภาพจากลิงก์ที่ต้องการ -->
+                <div class="my-4 relative flex justify-center items-center w-48 h-48">
+                    <div class="absolute inset-0 bg-pink-200/50 rounded-full filter blur-xl animate-pulse"></div>
+                    <div class="w-44 h-44 rounded-2xl overflow-hidden shadow-lg border-4 border-white relative z-10 animate-float-slow">
+                        <img 
+                            src="https://i.pinimg.com/736x/a8/12/f9/a812f9fb0e54d68096e2304da9938626.jpg" 
+                            alt="รูปคู่สุดน่ารัก" 
+                            class="w-full h-full object-cover"
+                            onerror="this.onerror=null; this.src='https://placehold.co/400x400/ffcce0/f93a74?text=💖';"
+                        />
+                    </div>
+                </div>
+
+                <p class="text-gray-700 text-lg md:text-xl font-itim mb-6 leading-relaxed">
+                    ขอบคุณที่เป็นเรื่องราวดีๆ ในทุกๆ วันนะ<br>
+                    สัญญาว่าจะดูแลและรักเธอให้ดีที่สุดเลยงับบ 💖
+                </p>
+
+                <button onclick="triggerHeartFireworks()" class="btn-cute py-3 px-8 bg-gradient-to-r from-pink-400 to-rose-400 text-white font-semibold rounded-full shadow-md flex items-center gap-2 mb-2">
+                    <i class="fas fa-heart text-pink-200"></i>
+                    <span>จุดพลุหัวใจอีกรอบ! ✨</span>
+                </button>
+            </div>
+
+            <!-- Step Indicators -->
+            <div id="stepDots" class="flex justify-center items-center gap-2 mt-8">
+                <span class="w-4 h-3 rounded-full bg-pink-500 transition-all duration-300" id="dot1"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-pink-200 transition-all duration-300" id="dot2"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-pink-200 transition-all duration-300" id="dot3"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-pink-200 transition-all duration-300" id="dot4"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-pink-200 transition-all duration-300" id="dot5"></span>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        let currentStep = 1;
+        let isAudioPlaying = false;
+
+        function createFloatingHearts() {
+            const container = document.getElementById('bgHeartsContainer');
+            const heartIcons = ['💖', '💗', '🌸', '✨', '💕', '🌷', '🥰', '🦊'];
+            
+            for (let i = 0; i < 22; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart-bg';
+                heart.innerText = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+                heart.style.left = `${Math.random() * 100}vw`;
+                heart.style.animationDuration = `${6 + Math.random() * 6}s`;
+                heart.style.animationDelay = `${Math.random() * 5}s`;
+                heart.style.fontSize = `${16 + Math.random() * 20}px`;
+                container.appendChild(heart);
+            }
+        }
+
+        function goToStep(stepNumber) {
+            if (stepNumber < 1 || stepNumber > 5) return;
+
+            if (!isAudioPlaying && stepNumber === 2) {
+                playMusic();
+            }
+
+            const currentElem = document.getElementById(`step${currentStep}`);
+            const nextElem = document.getElementById(`step${stepNumber}`);
+
+            if (currentElem && nextElem) {
+                currentElem.classList.remove('step-visible');
+                currentElem.classList.add('step-hidden');
+
+                setTimeout(() => {
+                    nextElem.classList.remove('step-hidden');
+                    nextElem.classList.add('step-visible');
+                    currentStep = stepNumber;
+                    updateStepIndicators(stepNumber);
+                }, 300);
+            }
+        }
+
+        function updateStepIndicators(step) {
+            for (let i = 1; i <= 5; i++) {
+                const dot = document.getElementById(`dot${i}`);
+                if (dot) {
+                    if (i === step) {
+                        dot.className = "w-4 h-3 rounded-full bg-pink-500 transition-all duration-300";
+                    } else if (i < step) {
+                        dot.className = "w-2.5 h-2.5 rounded-full bg-pink-300 transition-all duration-300";
+                    } else {
+                        dot.className = "w-2.5 h-2.5 rounded-full bg-pink-200 transition-all duration-300";
+                    }
+                }
+            }
+
+            const badgeText = document.getElementById('progressStepText');
+            const titles = [
+                'ความรู้สึกพิเศษ 💖',
+                'คำสัญญา 🥺✨',
+                'เตรียมตัวนะงับ 💗',
+                'คำถามสำคัญ 💖',
+                'เย้ เย้ เย้ เย้ ! 🎉'
+            ];
+            if (badgeText) badgeText.innerText = titles[step - 1];
+        }
+
+        function acceptProposal() {
+            goToStep(5);
+            setTimeout(() => {
+                triggerHeartFireworks();
+            }, 400);
+        }
+
+        function triggerHeartFireworks() {
+            if (typeof confetti === 'undefined') return;
+
+            const count = 200;
+            const defaults = { origin: { y: 0.7 } };
+
+            function fire(particleRatio, opts) {
+                confetti({
+                    ...defaults,
+                    ...opts,
+                    particleCount: Math.floor(count * particleRatio),
+                    shapes: ['circle', 'square'],
+                    colors: ['#ff6192', '#ff9ebb', '#ffcce0', '#ffffff', '#ff1493', '#ffd700']
+                });
+            }
+
+            fire(0.25, { spread: 26, startVelocity: 55 });
+            fire(0.2, { spread: 60 });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+            fire(0.1, { spread: 120, startVelocity: 45 });
+
+            setTimeout(() => {
+                confetti({
+                    particleCount: 70,
+                    spread: 100,
+                    origin: { y: 0.6 },
+                    colors: ['#f93a74', '#ff6192', '#ffffff']
+                });
+            }, 300);
+        }
+
+        function playMusic() {
+            const audio = document.getElementById('bgMusic');
+            audio.play().then(() => {
+                isAudioPlaying = true;
+                document.getElementById('musicText').innerText = "กำลังเล่น 🎵";
+            }).catch(e => {
+                console.log("Audio play error", e);
+            });
+        }
+
+        function stopMusic() {
+            const audio = document.getElementById('bgMusic');
+            audio.pause();
+            isAudioPlaying = false;
+            document.getElementById('musicText').innerText = "เปิดเพลง 🎵";
+        }
+
+        function toggleMusic() {
+            if (isAudioPlaying) {
+                stopMusic();
+            } else {
+                playMusic();
+            }
+        }
+
+        window.onload = function () {
+            createFloatingHearts();
+        };
+    </script>
+</body>
+</html>
